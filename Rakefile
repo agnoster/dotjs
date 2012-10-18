@@ -6,14 +6,15 @@ task :install => 'install:all'
 DAEMON_INSTALL_DIR = ENV['PREFIX'] || "/usr/local/bin"
 
 namespace :install do
-  task :all => [ :prompt, :daemon, :create_dir, :agent, :chrome, :done ]
+  task :all => [ :prompt, :daemon, :cli, :create_dir, :agent, :chrome, :done ]
 
   task :prompt do
     puts "\e[1m\e[32mdotjs\e[0m"
     puts "\e[1m-----\e[0m"
     puts "I will install:", ""
     puts "1. djsd(1) in #{DAEMON_INSTALL_DIR}"
-    puts "2. com.github.dotjs in ~/Library/LaunchAgents",""
+    puts "2. dotjs(1) in #{DAEMON_INSTALL_DIR}"
+    puts "3. com.github.dotjs in ~/Library/LaunchAgents",""
     print "Ok? (y/n) "
 
     begin
@@ -61,6 +62,11 @@ namespace :install do
     cp "bin/djsd", DAEMON_INSTALL_DIR, :verbose => true, :preserve => true
   end
 
+  desc "Install dotjs cli tool"
+  task :cli => :install_dir_writeable do
+    cp "bin/dotjs", DAEMON_INSTALL_DIR, :verbose => true, :preserve => true
+  end
+
   desc "Create ~/.js"
   task :create_dir do
     if !File.directory? js_dir = File.join(ENV['HOME'], ".js")
@@ -80,15 +86,16 @@ desc "Uninstall dotjs"
 task :uninstall => 'uninstall:all'
 
 namespace :uninstall do
-  task :all => [ :prompt, :daemon, :agent, :chrome, :done ]
+  task :all => [ :prompt, :daemon, :cli, :agent, :chrome, :done ]
 
   task :prompt do
     puts "\e[1m\e[32mdotjs\e[0m"
     puts "\e[1m-----\e[0m"
     puts "I will remove:", ""
     puts "1. djsd(1) from #{DAEMON_INSTALL_DIR}"
-    puts "2. com.github.dotjs from ~/Library/LaunchAgents"
-    puts "3. The 'dotjs' Google Chrome Extension",""
+    puts "2. dotjs(1) from #{DAEMON_INSTALL_DIR}"
+    puts "3. com.github.dotjs from ~/Library/LaunchAgents"
+    puts "4. The 'dotjs' Google Chrome Extension",""
     puts "I will not remove:", ""
     puts "1. ~/.js", ""
     print "Ok? (y/n) "
@@ -126,6 +133,11 @@ namespace :uninstall do
   desc "Uninstall dotjs daemon"
   task :daemon => :install_dir_writeable do
     rm File.join(DAEMON_INSTALL_DIR, "djsd"), :verbose => true
+  end
+
+  desc "Uninstall dotjs cli tool"
+  task :cli => :install_dir_writeable do
+    rm File.join(DAEMON_INSTALL_DIR, "dotjs"), :verbose => true
   end
 
   desc "Uninstall Google Chrome extension"

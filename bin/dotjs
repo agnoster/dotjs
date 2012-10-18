@@ -1,0 +1,47 @@
+#!/usr/bin/env ruby
+
+if (%w( -h --help -help help ) & ARGV).length > 0
+  puts <<USAGE
+usage: dotjs [-hv] source [path]
+install remote dotjs packages
+
+  source is:
+     1) a path to a directory with dotjs files, or
+     2) a url to a git repo containing 1), or
+     3) a repo on github containing 1), or
+     4) a user on github with a repo named .js like 3)
+
+  path is:
+     1) blank (in which case all scripts in source are installed), or
+     2) an exact file/directory to install from the repo, or
+     3) a pattern to match with Dir.glob inside the repo
+
+dotjs requires ruby and git to function
+USAGE
+  exit
+end
+
+if (%w( example examples ) & ARGV).length > 0
+  puts <<EXAMPLES
+$ dotjs janl github.com.js
+> Installing github.com.js from github.com/janl/.js.git
+
+$ dotjs agnoster/gotjs
+> Installing all scripts from github.com/agnoster/gotjs.git
+
+$ dotjs https://github.com/tsigo/dotfiles.git js/
+> Installing scripts in js/ from https://github.com/tsigo/dotfiles.git
+
+$ dotjs agnoster/gotjs github.com.js
+> Updating agnoster/gotjs...
+> Already installed package "agnoster/gotjs"
+EXAMPLES
+end
+
+DIR=ENV['HOME'] + '/.js'
+TMPDIR=DIR + '/.sources'
+
+if ARGV.include?('-v')
+  puts "dotjs 1.6"
+  exit
+end
